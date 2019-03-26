@@ -36,7 +36,7 @@ class UserLayout extends React.PureComponent {
   // getPageTitle() {
   //   const { routerData, location } = this.props;
   //   const { pathname } = location;
-  //   let title = 'Ant Design Pro';
+  //   let title = 'ICS Lighter';
   //   if (routerData[pathname] && routerData[pathname].name) {
   //     title = `${routerData[pathname].name} - Ant Design Pro`;
   //   }

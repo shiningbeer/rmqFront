@@ -17,11 +17,18 @@ export default [
     Routes: ['src/pages/Authorized'],
     authority: ['admin', 'user'],
     routes: [
-      // dashboard
-      { path: '/', redirect: '/dashboard/analysis' },
+      { path: '/', redirect: '/task' },
+      { path: '/task', icon: 'compass', name: '任务管理', component: './Dashboard/Analysis' },
+      { path: '/target', icon: 'global', name: '目标管理', component: './Dashboard/Analysis' },
+      { path: '/plugin', icon: 'global', name: '插件管理', component: './Dashboard/Analysis' },
+      { path: '/node', icon: 'fork', name: '节点管理', component: './Dashboard/Analysis' },
+      { path: '/usermr', icon: 'user', name: '用户管理', component: './Dashboard/Analysis' },
+
+      //----original--------
       {
+        // dashboard
         path: '/dashboard',
-        name: 'dashboard',
+        // name: 'dashboard',
         icon: 'dashboard',
         routes: [
           {
@@ -45,7 +52,7 @@ export default [
       {
         path: '/form',
         icon: 'form',
-        name: 'form',
+        // name: 'form',
         routes: [
           {
             path: '/form/basic-form',
@@ -91,7 +98,7 @@ export default [
       {
         path: '/list',
         icon: 'table',
-        name: 'list',
+        // name: 'list',
         routes: [
           {
             path: '/list/table-list',
@@ -138,7 +145,7 @@ export default [
       },
       {
         path: '/profile',
-        name: 'profile',
+        // name: 'profile',
         icon: 'profile',
         routes: [
           // profile
@@ -156,7 +163,7 @@ export default [
         ],
       },
       {
-        name: 'result',
+        // name: 'result',
         icon: 'check-circle-o',
         path: '/result',
         routes: [
@@ -170,7 +177,7 @@ export default [
         ],
       },
       {
-        name: 'exception',
+        // name: 'exception',
         icon: 'warning',
         path: '/exception',
         routes: [
@@ -199,7 +206,7 @@ export default [
         ],
       },
       {
-        name: 'account',
+        // name: 'account',
         icon: 'user',
         path: '/account',
         routes: [
