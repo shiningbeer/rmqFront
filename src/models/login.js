@@ -5,6 +5,7 @@ import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
 
+import { usermgr } from '@/services/myapi';
 export default {
   namespace: 'login',
 
@@ -14,7 +15,7 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(usermgr.getToken, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: response,
@@ -51,6 +52,8 @@ export default {
         payload: {
           status: false,
           currentAuthority: 'guest',
+          token:'',
+          currentUser:'guest'
         },
       });
       reloadAuthorized();
@@ -68,6 +71,8 @@ export default {
   reducers: {
     changeLoginStatus(state, { payload }) {
       setAuthority(payload.currentAuthority);
+      localStorage.setItem('token',payload.token)
+      localStorage.setItem('icsUser',payload.currentUser)
       return {
         ...state,
         status: payload.status,

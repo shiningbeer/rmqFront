@@ -8,7 +8,7 @@ import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
 import pathToRegexp from 'path-to-regexp';
 import Media from 'react-media';
-import { formatMessage } from 'umi/locale';
+
 import Authorized from '@/utils/Authorized';
 import logo from '../assets/lighter.svg';
 import Footer from './Footer';
@@ -19,7 +19,7 @@ import PageLoading from '@/components/PageLoading';
 import SiderMenu from '@/components/SiderMenu';
 import { title } from '../defaultSettings';
 import styles from './BasicLayout.less';
-
+import { formatMessage, setLocale, getLocale } from 'umi/locale';
 // lazy load SettingDrawer
 const SettingDrawer = React.lazy(() => import('@/components/SettingDrawer'));
 
@@ -72,6 +72,7 @@ class BasicLayout extends React.PureComponent {
       type: 'menu/getMenuData',
       payload: { routes, authority },
     });
+    setLocale('zh-CN')
   }
 
   componentDidUpdate(preProps) {

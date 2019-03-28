@@ -18,11 +18,12 @@ export default [
     authority: ['admin', 'user'],
     routes: [
       { path: '/', redirect: '/task' },
-      { path: '/task', icon: 'compass', name: '任务管理', component: './Dashboard/Analysis' },
-      { path: '/target', icon: 'global', name: '目标管理', component: './Dashboard/Analysis' },
-      { path: '/plugin', icon: 'global', name: '插件管理', component: './Dashboard/Analysis' },
-      { path: '/node', icon: 'fork', name: '节点管理', component: './Dashboard/Analysis' },
-      { path: '/usermr', icon: 'user', name: '用户管理', component: './Dashboard/Analysis' },
+      { path: '/task', icon: 'compass', name: '任务管理', component: './MyPages/TaskPage' },
+      { path: '/target', icon: 'global', name: '目标管理', component: './MyPages/TargetPage' },
+      { path: '/plugin', icon: 'tool', name: '插件管理', component: './MyPages/PluginPage' ,authority:['admin']},
+      { path: '/node', icon: 'fork', name: '节点管理', component: './MyPages/NodePage' ,authority:['admin']},
+      { path: '/usermr', icon: 'user', name: '用户管理', component: './MyPages/UserMgrPage' ,authority:['admin']},
+      { path: '/help',  component: './MyPages/HelpPage'},
 
       //----original--------
       {
@@ -98,7 +99,7 @@ export default [
       {
         path: '/list',
         icon: 'table',
-        // name: 'list',
+        name: 'list',
         routes: [
           {
             path: '/list/table-list',

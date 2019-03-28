@@ -79,7 +79,7 @@ export default function request(url, option) {
     .digest('hex');
 
   const defaultOptions = {
-    credentials: 'include',
+    // credentials: 'include',
   };
   const newOptions = { ...defaultOptions, ...options };
   if (
@@ -91,6 +91,7 @@ export default function request(url, option) {
       newOptions.headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
+         'token':localStorage.getItem('token'),
         ...newOptions.headers,
       };
       newOptions.body = JSON.stringify(newOptions.body);
