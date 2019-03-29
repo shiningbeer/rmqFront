@@ -9,7 +9,7 @@ import { List, Card, Row, Col, Radio, Input, Progress, Button, Icon, Dropdown, M
 const Dragger = Upload.Dragger;
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import Result from '@/components/Result';
-
+import NewTaskModal from './NewTaskModal'
 import styles from './BasicList.less';
 
 const FormItem = Form.Item;
@@ -36,6 +36,7 @@ class BasicList extends PureComponent {
     mouseOverDelBtnIndex: -1,
     modalVisible: false,
     selectedPlugin: {},
+    NewTaskModalVisible:false,
   }
 
   render() {
@@ -247,7 +248,6 @@ class BasicList extends PureComponent {
         <div>
           <p>支持三种类型任务，端口任务、插件任务以及联合任务。</p>
           <p>联合任务是指首先进行端口任务，然后以端口任务的结果作为目标，再次执行插件任务。</p>
-          <p>最上面那行统计数据目前是假的。</p>
         </div>
       }>
 
@@ -274,9 +274,9 @@ class BasicList extends PureComponent {
             bodyStyle={{ padding: '0 32px 40px 32px' }}
             extra={extraContent}
           >
-            <Button onClick={() => { dispatch(routerRedux.push('/task/newtask')) }} type="dashed"
+            <Button onClick={() => { this.setState({NewTaskModalVisible:true}) }} type="dashed"
               style=
-              {{ width: '100%', marginBottom: 18, fontWeight: '300', fontSize: 16,  }}
+              {{ width: '100%', marginBottom: 18, fontWeight: '400', fontSize: 20, height:60 }}
               icon="plus">
               新建任务
             </Button>
@@ -287,61 +287,11 @@ class BasicList extends PureComponent {
             />
           </Card>
         </div>
-        <Modal
-          title={`编辑插件信息-->${this.state.selectedPlugin.name}`}
-          visible={this.state.modalVisible}
-          onOk={onModalOk}
-          onCancel={onModalCancel}
-          maskClosable={false}>
-          <Form
-            hideRequiredMark
-            style={{ marginTop: 8 }}
-          >
-
-
-            <FormItem
-              {...formItemLayout}
-              label="插件描述"
-            >
-              {getFieldDecorator('description', { initialValue: this.state.selectedPlugin.description, })(
-                <TextArea style={{ minHeight: 16 }} placeholder="可不填，插件的简单描述。" rows={4} />
-              )}
-            </FormItem>
-
-            <FormItem
-              {...formItemLayout}
-              label="使用协议"
-            >
-              <div>
-                {getFieldDecorator('protocal', {
-                  initialValue: this.state.selectedPlugin.protocal,
-                  rules: [{
-                    required: true, message: '请选择协议',
-                  }],
-                })(
-                  <Radio.Group>
-                    <RadioButton value='TCP'>TCP</RadioButton>
-                    <RadioButton value='UDP'>UDP</RadioButton>
-                  </Radio.Group>
-                )}
-              </div>
-            </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="使用端口"
-            >
-              {getFieldDecorator('port', {
-                rules: [{
-                  required: true, message: '请输入端口号',
-                }],
-                initialValue: this.state.selectedPlugin.port,
-              })(
-                <Input placeholder="必填项，插件使用的端品号" />
-              )}
-            </FormItem>
-
-          </Form>
-        </Modal>
+        <NewTaskModal
+            visible={this.state.NewTaskModalVisible}
+            hideModal={()=>{this.setState({NewTaskModalVisible:false})}}
+          />
+       
       </PageHeaderWrapper>
     );
   }
