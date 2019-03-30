@@ -19,7 +19,7 @@ const SelectOption = Select.Option;
 const { Search, TextArea } = Input;
 
 @connect(({ task,loading }) => ({
-  task:task.taskList,
+  taskList:task.taskList,
   loading: loading.effects['task/get']
 }))
 @Form.create()
@@ -46,7 +46,7 @@ class BasicList extends PureComponent {
       dispatch,
     } = this.props;
     const { getFieldDecorator, getFieldValue, resetFields } = this.props.form;
-
+    console.log(taskList)
     const extraContent = (
       <div className={styles.extraContent}>
         <RadioGroup defaultValue="all">
@@ -144,46 +144,42 @@ class BasicList extends PureComponent {
       },
       {
         title: '描述',
-        dataIndex: 'description',
-        width: '20%',
+        dataIndex: 'desc',
+        width: '10%',
         render: (text, record) => {
           if (text == '')
-            return '该插件尚未添加任何描述信息'
+            return '未添加描述'
           else
             return text
         },
       },
       {
         title: '类型',
-        dataIndex: 'port',
+        dataIndex: 'type',
         width: '10%',
         render: (text, record) => {
-          if (text == '')
-            return '请完善'
-          else
-            return text
+          if (text == 'port')
+            return '端口'
+          if(text=='plugin')
+            return '插件'
+          if(text=='combine')
+            return '联合'
         },
       },
       {
         title: '执行阶段',
-        dataIndex: 'dd',
+        dataIndex: 'stage',
         width: '10%',
-        render: (text, record) => {
-          if (text == '')
-            return '请完善'
-          else
-            return text
-        },
+        
       },
       {
         title: '当前进度',
-        dataIndex: 'protocal',
+        dataIndex: 'process',
         width: '20%',
         render: (text, record) => {
-          if (text == '')
-            return '请完善'
-          else
-            return text
+            return (
+          <Progress percent={20} status={'normal'} strokeWidth={6} style={{ width: 180 }} />
+            )
         },
       },
       {

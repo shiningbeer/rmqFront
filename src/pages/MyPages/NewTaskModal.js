@@ -112,7 +112,15 @@ export default class UpdateForm extends PureComponent {
     onCancel = () => {
         const { hideModal } = this.props
         hideModal()
-        this.setState({ currentStep: 0 })
+        this.setState({
+            currentStep: 0,
+            name: '',
+            type: '',
+            desc: '',
+            selectedTargets: [],
+            selectedPlugins: [],
+
+        })
     }
 
     backward = () => {
@@ -161,7 +169,7 @@ export default class UpdateForm extends PureComponent {
                 {
                     title: '描述',
                     dataIndex: 'description',
-                    key:'desc1',
+                    key: 'desc1',
                     width: '40%',
                     render: (text, record) => {
                         if (text == '')
@@ -190,9 +198,15 @@ export default class UpdateForm extends PureComponent {
                     loading={loadingTarget}
                     data={{ list: targetList, pagination: { pageSize: 6 } }}
                     columns={columns}
+                    pagination={false}
                     onSelectRow={(rows) => { this.setState({ selectedTargets: rows }) }}
                 //   onChange={this.handleStandardTableChange}
                 />,
+                <div className={styles.desc}>
+                    <h3>说明：</h3>
+                    <p>分页和查询功能将于日后推出。</p>
+
+                </div>,
             ]
 
         }
@@ -201,13 +215,18 @@ export default class UpdateForm extends PureComponent {
                 return [
                     <div style={{ textAlign: 'center' }}>
                         <p>端口任务无须选择插件，请直接按“下一步”</p>
-                    </div>
+                    </div>,
+                    <div className={styles.desc}>
+                        <h3>说明：</h3>
+                        <p>端口任务与插件无关，只关注端口号。</p>
+
+                    </div>,
                 ]
             let columns = [
                 {
                     title: '插件名',
                     dataIndex: 'name',
-                    width: '20%',
+                    width: '30%',
                     render: (text, record) => {
                         let hash = crypto.createHash('md5')
                         hash.update(text);
@@ -222,8 +241,8 @@ export default class UpdateForm extends PureComponent {
                 {
                     title: '描述',
                     dataIndex: 'description',
-                    key:'desc2',
-                    width: '40%',
+                    key: 'desc2',
+                    width: '30%',
                     render: (text, record) => {
                         if (text == '')
                             return '该插件尚未添加任何描述信息'
@@ -260,18 +279,24 @@ export default class UpdateForm extends PureComponent {
                 <StandardTable
                     selectedRows={this.state.selectedPlugins}
                     loading={loadingPlugin}
-                    data={{ list: pluginList, pagination: { pageSize: 6 } }}
+                    data={{ list: pluginList, pagination: {} }}
                     columns={columns}
+                    pagination={false}
                     onSelectRow={(rows) => { this.setState({ selectedPlugins: rows }) }}
                 //   onChange={this.handleStandardTableChange}
                 />,
+                <div className={styles.desc}>
+                    <h3>说明：</h3>
+                    <p>分页和查询功能将于日后推出。</p>
+
+                </div>,
             ]
         }
         if (currentStep === 3) {
 
             const { selectedPlugins, type } = this.state
             if (type != 'port')
-                return (
+                return [
                     <div>
                         {selectedPlugins.map((item, index) => {
                             return (
@@ -287,23 +312,35 @@ export default class UpdateForm extends PureComponent {
                             )
 
                         })}
-                    </div>
-                )
-            return (
+                    </div>,
+                    <div className={styles.desc}>
+                        <h3>说明：</h3>
+                        <p>端口默认为插件的默认端口，但也可以特意指定某个插件的端口。指定后，插件将与目标的该端口进行交互。</p>
+                        <p>对于联合任务来说，端口扫描和插件扫描的端口是一致的。</p>
+
+                    </div>,
+                ]
+            return [
                 <FormItem key='portt' {...this.formLayout} label='端口'>
                     {form.getFieldDecorator('port', {
                         rules: [{
-                            required: true, message: '请指定端口！',
-                            pattern: '^([1-9][0-9]*)$'
+                            required: true, message: '请输入端口号，多个端口请用";"号间隔！',
+                            pattern: '^[0-9]+(;[0-9]+)*$'
                         }],
                     })(<Input placeholder="必填项" />)}
-                </FormItem>
-            )
+                </FormItem>,
+                <div className={styles.desc}>
+                    <h3>说明：</h3>
+                    <p>输入一个或多个端口号，多个端口号之间请用";"号间隔。</p>
+                    <p>如果输入多个端口，本次提交的任务将被分解成多个任务，每个端口一个任务。</p>
+
+                </div>,
+            ]
 
 
         }
         if (currentStep === 4) {
-            const { name, type, desc, selectedTargets, selectedPlugins,port } = this.state
+            const { name, type, desc, selectedTargets, selectedPlugins, port } = this.state
             let typeStr = ''
             if (type == 'combine')
                 typeStr = '联合任务'
@@ -403,7 +440,15 @@ export default class UpdateForm extends PureComponent {
                 <Button key="cancel" onClick={() => this.onCancel()}>
                     取消
         </Button>,
-                <Button key="submit" type="primary" onClick={() => this.handleNext(currentStep)}>
+                <Button key="submit" type="primary" onClick={() => {
+                    this.props.dispatch({
+                        type: 'task/add',
+                        newTask: {
+                            ...this.state
+                        }
+                    })
+                    this.onCancel()
+                }}>
                     完成
         </Button>,
             ];
@@ -425,7 +470,7 @@ export default class UpdateForm extends PureComponent {
         return (
             <Modal
                 width={'60%'}
-                bodyStyle={{ padding: '32px 40px 48px' }}
+                bodyStyle={{ padding: '32px 40px 48px', minHeight: window.screen.height * 0.6 }}
                 destroyOnClose
                 title="新建任务"
                 visible={visible}
@@ -433,7 +478,7 @@ export default class UpdateForm extends PureComponent {
                 onCancel={() => this.onCancel()}
                 maskClosable={false}
             >
-                <Steps style={{ marginBottom: 80 }} current={currentStep}>
+                <Steps style={{ marginBottom: 40 }} current={currentStep}>
                     <Step title="输入基本信息" />
                     <Step title="选择目标" />
                     <Step title="选择插件" />

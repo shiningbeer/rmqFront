@@ -266,7 +266,7 @@ class BasicList extends PureComponent {
           <Card
             className={styles.listCard}
             bordered={false}
-            title="插件列表"
+            title={`插件总数：${pluginList.length}个`}
             style={{ marginTop: 10 }}
             bodyStyle={{ padding: '0 32px 40px 32px' }}
             extra={extraContent}

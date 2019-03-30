@@ -99,7 +99,7 @@ export default [
       {
         path: '/list',
         icon: 'table',
-        // name: 'list',
+        name: 'list',
         routes: [
           {
             path: '/list/table-list',
