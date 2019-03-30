@@ -324,6 +324,7 @@ class BasicList extends PureComponent {
               {getFieldDecorator('port', {
                 rules: [{
                   required: true, message: '请输入端口号',
+                  pattern:'^([1-9][0-9]*)$'
                 }],
                 initialValue: this.state.selectedPlugin.port,
               })(

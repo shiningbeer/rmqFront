@@ -94,7 +94,19 @@
     width: 272px;
   }
 }
-
+.information {
+  line-height: 22px;
+  :global {
+    .ant-row:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+  .label {
+    color: @heading-color;
+    text-align: right;
+    padding-right: 8px;
+  }
+}
 @media screen and (max-width: @screen-xs) {
   .standardList {
     :global {
