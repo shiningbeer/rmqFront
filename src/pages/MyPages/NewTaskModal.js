@@ -33,10 +33,12 @@ const { Step } = Steps;
 const { TextArea } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
-@connect(({ target, plugin, loading }) => ({
+@connect(({ target, targetI,plugin, loading }) => ({
     targetList: target.targetList,
+    targetListI: targetI.targetList,
     pluginList: plugin.pluginList,
     loadingTarget: loading.effects['targetget'],
+    loadingTargetI: loading.effects['targetgetI'],
     loadingPlugin: loading.effects['plugin/get']
 }))
 @Form.create()
@@ -138,17 +140,10 @@ export default class UpdateForm extends PureComponent {
     };
 
     renderContent = (currentStep) => {
-        const { form, targetList, pluginList, loadingPlugin, loadingTarget } = this.props;
+        const { form, targetList, targetListI,pluginList, loadingPlugin, loadingTarget } = this.props;
         const { type, selectedTargets, name, desc } = this.state;
 
         if (currentStep === 1) {
-            if (type == 'plugin') {
-                return [
-
-                    <p>第二步</p>,
-                    <p>插件任务</p>
-                ]
-            }
             let columns = [
                 {
                     title: '目标名',
@@ -192,6 +187,25 @@ export default class UpdateForm extends PureComponent {
 
 
             ];
+            if (type == 'plugin') {
+                return [
+                <StandardTable
+                    selectedRows={selectedTargets}
+                    loading={loadingTarget}
+                    data={{ list: targetListI, pagination: { pageSize: 6 } }}
+                    columns={columns}
+                    pagination={false}
+                    onSelectRow={(rows) => { this.setState({ selectedTargets: rows }) }}
+                //   onChange={this.handleStandardTableChange}
+                />,
+                <div className={styles.desc}>
+                    <h3>说明：</h3>
+                    <p>分页和查询功能将于日后推出。</p>
+
+                </div>,
+            ]
+            }
+            
             return [
                 <StandardTable
                     selectedRows={selectedTargets}
@@ -441,11 +455,13 @@ export default class UpdateForm extends PureComponent {
                     取消
         </Button>,
                 <Button key="submit" type="primary" onClick={() => {
+                    var newTask={
+                        ...this.state
+                    }
+                    delete newTask.currentStep
                     this.props.dispatch({
                         type: 'task/add',
-                        newTask: {
-                            ...this.state
-                        }
+                        newTask,
                     })
                     this.onCancel()
                 }}>

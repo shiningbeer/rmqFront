@@ -50,23 +50,23 @@ export default {
     },
     *del({ taskId }, { call, put }) {
       const re = yield call(task.del, { taskId });
-      re == 'ok' ? message.success('删除任务成功') : message.warning('删除任务失败')
+      re == 'ok' ? message.success('任务已删除') : message.warning('任务删除失败')
       yield put({
         type: 'get',
         condition: {},
       });
     },
-    *start({ taskId, nodeList }, { call, put }) {
-      const re = yield call(task.start, { taskId, nodeList });
-      re == 'ok' ? message.success('任务已开始') : message.warning('开始任务失败')
+    *start({ taskId}, { call, put }) {
+      const re = yield call(task.start, { taskId});
+      re == 'ok' ? message.success('任务已开始') : message.warning('任务开始失败')
       yield put({
         type: 'get',
         condition: {},
-      });
+      })
     },
     *resume({ taskId }, { call, put }) {
       const re = yield call(task.resume, { taskId });
-      re == 'ok' ? message.success('继续任务成功') : message.warning('继续任务失败')
+      re == 'ok' ? message.success('任务已继续') : message.warning('任务继续失败')
       yield put({
         type: 'get',
         condition: {},
@@ -74,7 +74,7 @@ export default {
     },
     *pause({ taskId }, { call, put }) {
       const re = yield call(task.pause, { taskId });
-      re == 'ok' ? message.success('成功暂停任务') : message.warning('暂停任务失败')
+      re == 'ok' ? message.success('任务已暂停') : message.warning('任务暂停失败')
       yield put({
         type: 'get',
         condition: {},

@@ -1,6 +1,17 @@
 @import '~antd/lib/style/themes/default.less';
 @import '~@/utils/utils.less';
 
+  .icon {
+    font-size: 28px;
+    color: @primary-color;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+      color: @error-color;
+    }
+  }
 .desc {
   padding: 0 56px;
   color: @text-color-secondary;

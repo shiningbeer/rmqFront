@@ -60,6 +60,31 @@ export const target={
   }),
 
 }
+
+export const targetI={
+  //mock:'/api/target/get'
+  //real:urlbase+'/target/get'
+  get:async ()=>request(urlbase+'/targetI/get', {
+    method: 'POST',
+  }),
+  add:async (params)=>request(urlbase+'/targetI/add', {
+    method: 'POST',
+    body:params
+  }),
+  del:async (params)=>request(urlbase+'/targetI/delete', {
+    method: 'POST',
+    body:params
+  }),
+  getZmapResult:async ()=>request(urlbase+'/targetI/getZmapResult', {
+    method: 'POST',
+  }),
+
+  update:async (params)=>request(urlbase+'/targetI/update', {
+    method: 'POST',
+    body:params
+  }),
+
+}
 export const plugin={
   //mock:'/api/plugin/get'
   //real:urlbase+'/plugin/get'

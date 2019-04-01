@@ -3,7 +3,7 @@ import { findDOMNode } from 'react-dom';
 import moment from 'moment';
 import crypto from 'crypto'
 import Identicon from 'identicon.js'
-import { FaEdit, FaTrashO } from 'react-icons/lib/fa'
+import { FaPlayCircle, FaPauseCircle, FaTrashO } from 'react-icons/lib/fa'
 import { connect } from 'dva';
 import { List, Card, Row, Col, Radio, Input, Progress, Button, Icon, Dropdown, Menu, Avatar, Modal, Form, DatePicker, message, Upload, Select, Table, Divider, } from 'antd';
 const Dragger = Upload.Dragger;
@@ -18,8 +18,8 @@ const RadioGroup = Radio.Group;
 const SelectOption = Select.Option;
 const { Search, TextArea } = Input;
 
-@connect(({ task,loading }) => ({
-  taskList:task.taskList,
+@connect(({ task, loading }) => ({
+  taskList: task.taskList,
   loading: loading.effects['task/get']
 }))
 @Form.create()
@@ -32,11 +32,9 @@ class BasicList extends PureComponent {
     });
   }
   state = {
-    mouseOverEditBtnIndex: -1,
-    mouseOverDelBtnIndex: -1,
-    modalVisible: false,
-    selectedPlugin: {},
-    NewTaskModalVisible:false,
+
+    TaskDetailModalVisible: false,
+    NewTaskModalVisible: false,
   }
 
   render() {
@@ -56,50 +54,8 @@ class BasicList extends PureComponent {
         <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
       </div>
     );
-    const editBtnOutLook = (index) => index == this.state.mouseOverEditBtnIndex ?
-      {
-        size: 28,
-        color: 'red'
-      } :
-      {
-        size: 28,
-        color: 'dodgerblue'
-      }
-    const delBtnOutLook = (index) => index == this.state.mouseOverDelBtnIndex ?
-      {
-        size: 30,
-        color: 'red'
-      } :
-      {
-        size: 30,
-        color: 'dodgerblue'
-      }
-    const onModalOk = () => {
-      this.props.form.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          console.log(values)
-          dispatch({
-            type: 'plugin/update',
-            payload: {
-              name: this.state.selectedPlugin.name,
-              update: values
-            }
-          })
-          resetFields()
-          this.setState({
-            modalVisible: false,
-          })
-        }
-      })
-    }
 
-    const onModalCancel = () => {
-      this.setState({
-        modalVisible: false,
-      })
-      resetFields()
 
-    }
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -112,14 +68,14 @@ class BasicList extends PureComponent {
       },
     };
     const confirm = Modal.confirm;
-    function showConfirm(name) {
+    function showConfirm(record) {
       confirm({
         title: '确认删除',
-        content: `确认要删除插件"${name}"吗？`,
+        content: `确认要删除任务"${record.name}"吗？`,
         onOk() {
           dispatch({
-            type: 'plugin/del',
-            payload: name,
+            type: 'task/del',
+            taskId: record._id,
           });
         },
         onCancel() { },
@@ -130,7 +86,7 @@ class BasicList extends PureComponent {
       {
         title: '任务名',
         dataIndex: 'name',
-        width: '20%',
+        width: '15%',
         render: (text, record) => {
           let hash = crypto.createHash('md5')
           hash.update(text);
@@ -142,50 +98,60 @@ class BasicList extends PureComponent {
           )
         },
       },
-      {
-        title: '描述',
-        dataIndex: 'desc',
-        width: '10%',
-        render: (text, record) => {
-          if (text == '')
-            return '未添加描述'
-          else
-            return text
-        },
-      },
-      {
+            {
         title: '类型',
         dataIndex: 'type',
         width: '10%',
         render: (text, record) => {
           if (text == 'port')
             return '端口'
-          if(text=='plugin')
+          if (text == 'plugin')
             return '插件'
-          if(text=='combine')
+          if (text == 'combine')
             return '联合'
         },
       },
       {
-        title: '执行阶段',
-        dataIndex: 'stage',
+        title: '插件',
+        dataIndex: 'plugin',
         width: '10%',
-        
+        render: (text, record) => {
+          if (text == null)
+            return '无'
+          else
+            return text
+        },
       },
+      {
+        title: '端口',
+        dataIndex: 'port',
+        width: '10%',
+      },
+
       {
         title: '当前进度',
         dataIndex: 'process',
-        width: '20%',
+        width: '15%',
         render: (text, record) => {
-            return (
-          <Progress percent={20} status={'normal'} strokeWidth={6} style={{ width: 180 }} />
-            )
+          return (
+            <Progress  percent={20} status={'normal'} strokeWidth={6} style={{ width: 160,paddingLeft:10 }}/> 
+          )
+        },
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'createdAt',
+        width: '15%',
+        render: (text, record) => {
+          return (
+            moment(text).format('YYYY-MM-DD HH:mm')
+          )
         },
       },
       {
         title: '用户',
         dataIndex: 'user',
-        width: '10%',
+        width: '5%',
         render: (text, record) => {
           if (text == '')
             return '请完善'
@@ -195,38 +161,56 @@ class BasicList extends PureComponent {
       },
       {
         title: '操作',
-        width: '10%',
+        width: '15%',
         render: (text, record) => {
           let index = record._id
+          let renderPlayPauseButton = () => {
+            if (!record.started)
+              return (
+                <FaPlayCircle className={styles.icon}
+                  onClick={() => dispatch({ type: 'task/start', taskId: record._id })}
+                />
+              )
+            if (record.paused)
+              return (
+                <FaPlayCircle className={styles.icon}
+                  onClick={() => dispatch({ type: 'task/resume', taskId: record._id })} />
+              )
+            return (
+              <FaPauseCircle className={styles.icon}
+                onClick={() => dispatch({ type: 'task/pause', taskId: record._id })}
+              />
+            )
+          }
+          let renderPlayPauseButton_notUser = () => {
 
+            if (record.paused)
+              return (
+                <FaPlayCircle style={{ fontSize: 28, color: 'grey' }} />
+              )
+            return (
+              <FaPauseCircle style={{ fontSize: 28, color: 'grey' }} />
+            )
+          }
           if (record.user == localStorage.getItem('icsUser'))
             return (
               <Fragment>
-                <FaEdit
-                  style={{ fontSize: editBtnOutLook(index).size, color: editBtnOutLook(index).color, marginTop: 6 }}
-                  onMouseEnter={() => this.setState({ mouseOverEditBtnIndex: index })}
-                  onMouseLeave={() => this.setState({ mouseOverEditBtnIndex: -1 })}
-                  onClick={() => this.setState({ modalVisible: true, selectedPlugin: record })}
-                />
-                <Divider type="vertical" />
-                <FaTrashO
-                  style={{ fontSize: delBtnOutLook(index).size, color: delBtnOutLook(index).color }}
-                  onClick={() => showConfirm(record.name)}
-                  onMouseEnter={() => this.setState({ mouseOverDelBtnIndex: index })}
-                  onMouseLeave={() => this.setState({ mouseOverDelBtnIndex: -1 })}
+                <a>详情</a>
+                <Divider type='vertical' />
+                {renderPlayPauseButton()}
+                <FaTrashO className={styles.icon}
+                  onClick={() => showConfirm(record)}
                 />
               </Fragment>)
           else
             return (
               <Fragment>
-                <FaEdit
-                  style={{ fontSize: editBtnOutLook(index).size, color: 'grey', marginTop: 6 }}
-                />
-                <Divider type="vertical" />
-                <FaTrashO
-                  style={{ fontSize: delBtnOutLook(index).size, color: 'grey' }}
-                />
-              </Fragment>)
+                <a>详情</a>
+                <Divider type='vertical' />
+                {renderPlayPauseButton_notUser()}
+                <FaTrashO style={{ fontSize: 28, color: 'grey' }} />
+              </Fragment>
+            )
 
 
         },
@@ -270,9 +254,9 @@ class BasicList extends PureComponent {
             bodyStyle={{ padding: '0 32px 40px 32px' }}
             extra={extraContent}
           >
-            <Button onClick={() => { this.setState({NewTaskModalVisible:true}) }} type="dashed"
+            <Button onClick={() => { this.setState({ NewTaskModalVisible: true }) }} type="dashed"
               style=
-              {{ width: '100%', marginBottom: 18, fontWeight: '400', fontSize: 20, height:60 }}
+              {{ width: '100%', marginBottom: 18, fontWeight: '400', fontSize: 20, height: 60 }}
               icon="plus">
               新建任务
             </Button>
@@ -284,10 +268,10 @@ class BasicList extends PureComponent {
           </Card>
         </div>
         <NewTaskModal
-            visible={this.state.NewTaskModalVisible}
-            hideModal={()=>{this.setState({NewTaskModalVisible:false})}}
-          />
-       
+          visible={this.state.NewTaskModalVisible}
+          hideModal={() => { this.setState({ NewTaskModalVisible: false }) }}
+        />
+
       </PageHeaderWrapper>
     );
   }

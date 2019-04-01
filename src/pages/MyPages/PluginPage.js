@@ -220,35 +220,32 @@ class BasicList extends PureComponent {
         width: '10%',
         render: (text, record) => {
           let index = record._id
-
           if (record.user == localStorage.getItem('icsUser'))
             return (
               <Fragment>
                 <FaEdit
-                  style={{ fontSize: editBtnOutLook(index).size, color: editBtnOutLook(index).color, marginTop: 6 }}
-                  onMouseEnter={() => this.setState({ mouseOverEditBtnIndex: index })}
-                  onMouseLeave={() => this.setState({ mouseOverEditBtnIndex: -1 })}
+                  className={styles.icon}
+                  style={{marginTop:6}}
                   onClick={() => this.setState({ modalVisible: true, selectedPlugin: record })}
                 />
                 <Divider type="vertical" />
                 <FaTrashO
-                  style={{ fontSize: delBtnOutLook(index).size, color: delBtnOutLook(index).color }}
+                  className={styles.icon}
                   onClick={() => showConfirm(record.name)}
-                  onMouseEnter={() => this.setState({ mouseOverDelBtnIndex: index })}
-                  onMouseLeave={() => this.setState({ mouseOverDelBtnIndex: -1 })}
                 />
               </Fragment>)
           else
             return (
               <Fragment>
                 <FaEdit
-                  style={{ fontSize: editBtnOutLook(index).size, color: 'grey', marginTop: 6 }}
+                  style={{ fontSize: 28, color: 'grey', marginTop: 6 }}
                 />
                 <Divider type="vertical" />
                 <FaTrashO
-                  style={{ fontSize: delBtnOutLook(index).size, color: 'grey' }}
+                  style={{ fontSize: 28, color: 'grey' }}
                 />
               </Fragment>)
+
 
 
         },
