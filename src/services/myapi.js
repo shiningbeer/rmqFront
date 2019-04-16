@@ -60,6 +60,10 @@ export const target={
   }),
 
 }
+export const download=async (params)=>request(urlbase+'/results/download', {
+    method: 'POST',
+    body:params
+  })
 
 export const targetI={
   //mock:'/api/target/get'

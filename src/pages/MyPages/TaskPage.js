@@ -30,11 +30,26 @@ class BasicList extends PureComponent {
       type: 'task/get',
       condition: {},
     });
+    let timer = setInterval(() => {
+      this.props.dispatch({
+        type: 'task/get',
+        condition: {},
+      });
+    }, 3000);
+    this.setState({
+      timer
+    })
+  }
+  componentWillUnmount() {
+    if (this.state.timer != null) {
+      clearInterval(this.state.timer)
+    }
   }
   state = {
 
     TaskDetailModalVisible: false,
     NewTaskModalVisible: false,
+    timer: null,
   }
 
   render() {
@@ -44,7 +59,6 @@ class BasicList extends PureComponent {
       dispatch,
     } = this.props;
     const { getFieldDecorator, getFieldValue, resetFields } = this.props.form;
-    console.log(taskList)
     const extraContent = (
       <div className={styles.extraContent}>
         <RadioGroup defaultValue="all">
@@ -86,7 +100,7 @@ class BasicList extends PureComponent {
       {
         title: '任务名',
         dataIndex: 'name',
-        width: '15%',
+        width: '10%',
         render: (text, record) => {
           let hash = crypto.createHash('md5')
           hash.update(text);
@@ -98,7 +112,7 @@ class BasicList extends PureComponent {
           )
         },
       },
-            {
+      {
         title: '类型',
         dataIndex: 'type',
         width: '10%',
@@ -130,11 +144,15 @@ class BasicList extends PureComponent {
 
       {
         title: '当前进度',
-        dataIndex: 'process',
+        dataIndex: 'progress',
         width: '15%',
         render: (text, record) => {
+          var progress = Math.floor(text)
+          var status = 'normal'
+          if (progress == 100)
+            status = 'success'
           return (
-            <Progress  percent={20} status={'normal'} strokeWidth={6} style={{ width: 160,paddingLeft:10 }}/> 
+            <Progress percent={progress} status={status} strokeWidth={6} style={{ width: 160, paddingLeft: 10 }} />
           )
         },
       },
@@ -151,7 +169,7 @@ class BasicList extends PureComponent {
       {
         title: '用户',
         dataIndex: 'user',
-        width: '5%',
+        width: '10%',
         render: (text, record) => {
           if (text == '')
             return '请完善'
@@ -192,15 +210,22 @@ class BasicList extends PureComponent {
               <FaPauseCircle style={{ fontSize: 28, color: 'grey' }} />
             )
           }
+          let renderDownloadButton = () => {
+            if (record.resultCollected)
+              return (<Icon type='download' className={styles.icon} onClick={()=>{this.props.dispatch({type:'download/download',payload:record._id})}}/>)
+            else
+              return (<Icon type='download' style={{ fontSize: 28, color: 'grey', verticalAlign:'middle' }}/>)
+          }
           if (record.user == localStorage.getItem('icsUser'))
             return (
               <Fragment>
-                <a>详情</a>
-                <Divider type='vertical' />
+
                 {renderPlayPauseButton()}
                 <FaTrashO className={styles.icon}
                   onClick={() => showConfirm(record)}
                 />
+                <Divider type='vertical' />
+                {renderDownloadButton()}
               </Fragment>)
           else
             return (

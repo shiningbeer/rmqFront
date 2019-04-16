@@ -221,6 +221,7 @@ export default class UpdateForm extends PureComponent {
                     <p>分页和查询功能将于日后推出。</p>
 
                 </div>,
+                
             ]
 
         }
